@@ -1,0 +1,43 @@
+{
+  "short_name": "Quiz Geo Chimie",
+  "name": "Quiz Géologie & Chimie Premium",
+  "icons": [
+    {
+      "src": "logo192.svg",
+      "type": "image/svg+xml",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "logo512.svg",
+      "type": "image/svg+xml",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#667eea",
+  "background_color": "#ffffff",
+  "orientation": "portrait",
+  "categories": ["education", "entertainment"],
+  "lang": "fr",
+  "description": "Testez vos connaissances en géologie et chimie avec ce quiz éducatif",
+  "scope": "/",
+  "shortcuts": [
+    {
+      "name": "Quiz Libre",
+      "short_name": "Libre",
+      "description": "Commencer un quiz gratuit",
+      "url": "/?mode=free",
+      "icons": [{ "src": "logo192.svg", "sizes": "192x192" }]
+    },
+    {
+      "name": "Quiz Premium",
+      "short_name": "Premium",
+      "description": "Accéder au quiz premium",
+      "url": "/?mode=premium",
+      "icons": [{ "src": "logo192.svg", "sizes": "192x192" }]
+    }
+  ]
+}
