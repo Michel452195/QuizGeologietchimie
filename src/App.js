@@ -10,15 +10,15 @@ import LoadingSpinner from './LoadingSpinner';
 import { useAuth, useQuiz, useTheme, useAds } from './hooks';
 import AdComponent from './AdComponent';
 
-export const App = () => {
+const App = () => {
   const { loading, error, isPremium, user, logout } = useAuth();
   const { isDarkMode, toggleDarkMode } = useTheme();
   const { canAccessPremium } = useAds();
 
-  const [currentView, setCurrentView] = useState('home');
+  const [currentView, setCurrentView] = useState('home'); // 'home', 'category', 'quiz', 'settings'
   const [selectedCategory, setSelectedCategory] = useState('mixed');
   const [showSettings, setShowSettings] = useState(false);
-  const [quizMode, setQuizMode] = useState(null);
+  const [quizMode, setQuizMode] = useState(null); // null, 'free', 'premium'
 
   const {
     currentQuestionIndex,
@@ -137,14 +137,14 @@ export const App = () => {
         <QuizAds />
 
         <Question
-          question={currentQuestion?.question}
-          choices={currentQuestion?.choices}
+          question={currentQuestion?.question || ''}
+          choices={currentQuestion?.choices || []}
           onAnswer={handleAnswer}
           selectedChoice={selectedChoice}
           timeLeft={timeLeft}
           isPremium={isPremium || canAccessPremium}
           isAnswered={isAnswered}
-          correctIndex={currentQuestion?.correctIndex}
+          correctIndex={currentQuestion?.correctIndex ?? null}
         />
 
         {!(isPremium || canAccessPremium) && currentQuestionIndex === 0 && (
@@ -191,3 +191,5 @@ export const App = () => {
 
   return renderQuiz();
 };
+
+export default App;
