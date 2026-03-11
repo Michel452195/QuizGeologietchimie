@@ -10,15 +10,15 @@ import LoadingSpinner from './LoadingSpinner';
 import { useAuth, useQuiz, useTheme, useAds } from './hooks';
 import AdComponent from './AdComponent';
 
-const App = () => {
+export const App = () => {
   const { loading, error, isPremium, user, logout } = useAuth();
   const { isDarkMode, toggleDarkMode } = useTheme();
   const { canAccessPremium } = useAds();
 
-  const [currentView, setCurrentView] = useState('home'); // 'home', 'category', 'quiz', 'settings'
+  const [currentView, setCurrentView] = useState('home');
   const [selectedCategory, setSelectedCategory] = useState('mixed');
   const [showSettings, setShowSettings] = useState(false);
-  const [quizMode, setQuizMode] = useState(null); // null, 'free', 'premium'
+  const [quizMode, setQuizMode] = useState(null);
 
   const {
     currentQuestionIndex,
@@ -61,30 +61,19 @@ const App = () => {
     restartQuiz();
   };
 
-  const handleUpgrade = () => {
-    setShowSettings(true);
-  };
-
+  const handleUpgrade = () => setShowSettings(true);
   const handleBackToHome = () => {
     setCurrentView('home');
     setSelectedCategory('mixed');
     setQuizMode(null);
     restartQuiz();
   };
+  const handleShowSettings = () => setShowSettings(true);
+  const handleCloseSettings = () => setShowSettings(false);
 
-  const handleShowSettings = () => {
-    setShowSettings(true);
-  };
+  if (loading) return <LoadingSpinner />;
 
-  const handleCloseSettings = () => {
-    setShowSettings(false);
-  };
-
-  if (loading) {
-    return <LoadingSpinner />;
-  }
-
-  if (error) {
+  if (error)
     return (
       <div className="app error-container">
         <div className="error-card">
@@ -96,13 +85,10 @@ const App = () => {
         </div>
       </div>
     );
-  }
 
-  if (!user) {
-    return <Login />;
-  }
+  if (!user) return <Login />;
 
-  if (showSettings) {
+  if (showSettings)
     return (
       <Settings
         isDarkMode={isDarkMode}
@@ -110,9 +96,8 @@ const App = () => {
         onClose={handleCloseSettings}
       />
     );
-  }
 
-  if (currentView === 'home') {
+  if (currentView === 'home')
     return (
       <Home
         onStartQuiz={handleSelectMode}
@@ -122,9 +107,8 @@ const App = () => {
         onLogout={handleLogout}
       />
     );
-  }
 
-  if (currentView === 'category') {
+  if (currentView === 'category')
     return (
       <CategorySelector
         onSelectCategory={handleStartQuiz}
@@ -132,9 +116,8 @@ const App = () => {
         isPremium={isPremium || canAccessPremium}
       />
     );
-  }
 
-  if (quizFinished) {
+  if (quizFinished)
     return (
       <div className="app">
         <Result
@@ -148,60 +131,60 @@ const App = () => {
         />
       </div>
     );
-  }
 
- return (
-  <div className="app">
-    <div className="quiz-container">
-      <header className="quiz-header">
-        <button className="back-button" onClick={handleBackToHome}>
-          ← Retour
-        </button>
-        <h1>
-          Quiz {selectedCategory === 'geology' ? 'Géologie' : selectedCategory === 'chemistry' ? 'Chimie' : 'Mixte'} {isPremium || canAccessPremium ? '- Premium' : '- Gratuit'}
-        </h1>
-        <button className="settings-button" onClick={handleShowSettings}>
-          ⚙️
-        </button>
-      </header>
+  return (
+    <div className="app">
+      <div className="quiz-container">
+        <header className="quiz-header">
+          <button className="back-button" onClick={handleBackToHome}>
+            ← Retour
+          </button>
+          <h1>
+            Quiz {selectedCategory === 'geology' ? 'Géologie' : selectedCategory === 'chemistry' ? 'Chimie' : 'Mixte'}{' '}
+            {isPremium || canAccessPremium ? '- Premium' : '- Gratuit'}
+          </h1>
+          <button className="settings-button" onClick={handleShowSettings}>
+            ⚙️
+          </button>
+        </header>
 
-      {/* Pub en haut */}
-      {!isPremium && <AdComponent slot="1111111111" />}
+        {/* Pub en haut */}
+        {!isPremium && <AdComponent slot="1111111111" />}
 
-      <Question
-        question={currentQuestion?.question}
-        choices={currentQuestion?.choices}
-        onAnswer={handleAnswer}
-        selectedChoice={selectedChoice}
-        timeLeft={timeLeft}
-        isPremium={isPremium || canAccessPremium}
-        isAnswered={isAnswered}
-        correctIndex={currentQuestion?.correctIndex}
-      />
+        <Question
+          question={currentQuestion?.question}
+          choices={currentQuestion?.choices}
+          onAnswer={handleAnswer}
+          selectedChoice={selectedChoice}
+          timeLeft={timeLeft}
+          isPremium={isPremium || canAccessPremium}
+          isAnswered={isAnswered}
+          correctIndex={currentQuestion?.correctIndex}
+        />
 
-  {/* Pub après la première question */}
-      {!isPremium && currentQuestionIndex === 0 && <AdComponent slot="2222222222" />}
+        {/* Pub après la première question */}
+        {!isPremium && currentQuestionIndex === 0 && <AdComponent slot="2222222222" />}
 
-      {!(isPremium || canAccessPremium) && currentQuestionIndex === 0 && (
-        <PremiumBanner onUpgrade={handleUpgrade} />
-      )}
+        {!(isPremium || canAccessPremium) && currentQuestionIndex === 0 && (
+          <PremiumBanner onUpgrade={handleUpgrade} />
+        )}
 
-      <div className="quiz-progress">
-        <div className="progress-bar">
-          <div
-            className="progress-fill"
-            style={{ width: `${((currentQuestionIndex + 1) / shuffledQuestions.length) * 100}%` }}
-          ></div>
+        <div className="quiz-progress">
+          <div className="progress-bar">
+            <div
+              className="progress-fill"
+              style={{ width: `${((currentQuestionIndex + 1) / shuffledQuestions.length) * 100}%` }}
+            ></div>
+          </div>
+          <span className="progress-text">
+            Question {currentQuestionIndex + 1} sur {shuffledQuestions.length}
+          </span>
         </div>
-        <span className="progress-text">
-          Question {currentQuestionIndex + 1} sur {shuffledQuestions.length}
-        </span>
+
+        {/* Pub en bas */}
+        {!isPremium && <AdComponent slot="3333333333" />}
       </div>
-
-      {/* Pub en bas */}
-      {!isPremium && <AdComponent slot="3333333333" />}
-
     </div>
-  </div>
   );
+};
   };
