@@ -1,4 +1,3 @@
-// AdComponent.js
 import React, { useEffect } from "react";
 
 export default function AdComponent({ slot }) {
@@ -6,7 +5,7 @@ export default function AdComponent({ slot }) {
     try {
       (window.adsbygoogle = window.adsbygoogle || []).push({});
     } catch (e) {
-      console.error(e);
+      console.error("Adsense error", e);
     }
   }, []);
 
@@ -16,27 +15,5 @@ export default function AdComponent({ slot }) {
          data-ad-client="ca-pub-3226991016772326"
          data-ad-slot={slot}
          data-ad-format="auto"></ins>
-  );
-}
-
-import AdComponent from "./AdComponent";
-
-function QuizPage() {
-  return (
-    <div>
-      <h1>Quiz Géologie & Chimie</h1>
-
-      {/* Pub en haut */}
-      <AdComponent slot="1111111111" />
-
-      {/* Contenu du quiz */}
-      <QuizQuestions />
-
-      {/* Pub après le quiz */}
-      <AdComponent slot="2222222222" />
-
-      {/* Footer */}
-      <Footer />
-    </div>
   );
 }
