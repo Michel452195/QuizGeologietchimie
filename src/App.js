@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Home from './Home';
 import CategorySelector from './CategorySelector';
 import Question from './Question';
@@ -33,6 +33,16 @@ const App = () => {
     restartQuiz,
     currentQuestion
   } = useQuiz(quizMode === 'premium' || (quizMode === null && isPremium), selectedCategory);
+
+  useEffect(() => {
+    if (!(isPremium || canAccessPremium)) {
+      try {
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+      } catch (e) {
+        // ignore errors from ads script in development
+      }
+    }
+  }, [isPremium, canAccessPremium]);
 
   const handleStartQuiz = (category) => {
     setSelectedCategory(category);
@@ -169,6 +179,7 @@ const App = () => {
         correctIndex={currentQuestion?.correctIndex}
       />
 
+<<<<<<< HEAD
       {/* Pub après la première question */}
       {!isPremium && currentQuestionIndex === 0 && <AdComponent slot="2222222222" />}
 
