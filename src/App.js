@@ -179,8 +179,7 @@ const App = () => {
         correctIndex={currentQuestion?.correctIndex}
       />
 
-<<<<<<< HEAD
-      {/* Pub après la première question */}
+  {/* Pub après la première question */}
       {!isPremium && currentQuestionIndex === 0 && <AdComponent slot="2222222222" />}
 
       {!(isPremium || canAccessPremium) && currentQuestionIndex === 0 && (
@@ -204,5 +203,7 @@ const App = () => {
 
     </div>
   </div>
-);
-export default App;
+  );
+  };
+
+  export default App;
