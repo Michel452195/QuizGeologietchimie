@@ -15,10 +15,10 @@ const App = () => {
   const { isDarkMode, toggleDarkMode } = useTheme();
   const { canAccessPremium } = useAds();
 
-  const [currentView, setCurrentView] = useState('home'); // 'home', 'category', 'quiz', 'settings'
+  const [currentView, setCurrentView] = useState('home');
   const [selectedCategory, setSelectedCategory] = useState('mixed');
   const [showSettings, setShowSettings] = useState(false);
-  const [quizMode, setQuizMode] = useState(null); // null, 'free', 'premium'
+  const [quizMode, setQuizMode] = useState(null);
 
   const {
     currentQuestionIndex,
@@ -36,10 +36,12 @@ const App = () => {
 
   // -------------------- Effects --------------------
   useEffect(() => {
-    if (!(isPremium || canAccessPremium)) {
+    if (!(isPremium || canAccessPremium) && typeof window !== 'undefined') {
       try {
         (window.adsbygoogle = window.adsbygoogle || []).push({});
-      } catch (e) {}
+      } catch (e) {
+        console.warn('AdsbyGoogle push error:', e);
+      }
     }
   }, [isPremium, canAccessPremium]);
 
@@ -92,9 +94,8 @@ const App = () => {
   );
 
   // -------------------- Render functions --------------------
-  const renderLoading = () => <LoadingSpinner />;
-
-  const renderError = () => (
+  if (loading) return <LoadingSpinner />;
+  if (error) return (
     <div className="app error-container">
       <div className="error-card">
         <h2>Erreur de connexion</h2>
@@ -103,16 +104,15 @@ const App = () => {
       </div>
     </div>
   );
-
-  const renderSettings = () => (
+  if (!user) return <Login />;
+  if (showSettings) return (
     <Settings
       isDarkMode={isDarkMode}
       toggleDarkMode={toggleDarkMode}
       onClose={handleCloseSettings}
     />
   );
-
-  const renderHome = () => (
+  if (currentView === 'home') return (
     <Home
       onStartQuiz={handleSelectMode}
       onGoPremium={handleUpgrade}
@@ -121,16 +121,29 @@ const App = () => {
       onLogout={handleLogout}
     />
   );
-
-  const renderCategorySelector = () => (
+  if (currentView === 'category') return (
     <CategorySelector
       onSelectCategory={handleStartQuiz}
       onBack={handleBackToHome}
       isPremium={isPremium || canAccessPremium}
     />
   );
+  if (quizFinished) return (
+    <div className="app">
+      <Result
+        score={score}
+        total={shuffledQuestions.length}
+        questions={shuffledQuestions}
+        answers={answers}
+        isPremium={isPremium || canAccessPremium}
+        onRestart={() => setCurrentView('category')}
+        onBackToHome={handleBackToHome}
+      />
+    </div>
+  );
 
-  const renderQuiz = () => (
+  // -------------------- Main Quiz View --------------------
+  return (
     <div className="app">
       <div className="quiz-container">
         <QuizHeader />
@@ -165,31 +178,6 @@ const App = () => {
       </div>
     </div>
   );
-
-  const renderResult = () => (
-    <div className="app">
-      <Result
-        score={score}
-        total={shuffledQuestions.length}
-        questions={shuffledQuestions}
-        answers={answers}
-        isPremium={isPremium || canAccessPremium}
-        onRestart={() => setCurrentView('category')}
-        onBackToHome={handleBackToHome}
-      />
-    </div>
-  );
-
-  // -------------------- Main render --------------------
-  if (loading) return renderLoading();
-  if (error) return renderError();
-  if (!user) return <Login />;
-  if (showSettings) return renderSettings();
-  if (currentView === 'home') return renderHome();
-  if (currentView === 'category') return renderCategorySelector();
-  if (quizFinished) return renderResult();
-
-  return renderQuiz();
 };
 
 export default App;
