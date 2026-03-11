@@ -8,6 +8,7 @@ import Login from './Login';
 import Settings from './Settings';
 import LoadingSpinner from './LoadingSpinner';
 import { useAuth, useQuiz, useTheme, useAds } from './hooks';
+import AdComponent from './AdComponent';
 
 const App = () => {
   const { loading, error, isPremium, user, logout } = useAuth();
@@ -139,48 +140,58 @@ const App = () => {
     );
   }
 
-  return (
-    <div className="app">
-      <div className="quiz-container">
-        <header className="quiz-header">
-          <button className="back-button" onClick={handleBackToHome}>
-            ← Retour
-          </button>
-          <h1>Quiz {selectedCategory === 'geology' ? 'Géologie' : selectedCategory === 'chemistry' ? 'Chimie' : 'Mixte'} {isPremium || canAccessPremium ? '- Premium' : '- Gratuit'}</h1>
-          <button className="settings-button" onClick={handleShowSettings}>
-            ⚙️
-          </button>
-        </header>
+ return (
+  <div className="app">
+    <div className="quiz-container">
+      <header className="quiz-header">
+        <button className="back-button" onClick={handleBackToHome}>
+          ← Retour
+        </button>
+        <h1>
+          Quiz {selectedCategory === 'geology' ? 'Géologie' : selectedCategory === 'chemistry' ? 'Chimie' : 'Mixte'} {isPremium || canAccessPremium ? '- Premium' : '- Gratuit'}
+        </h1>
+        <button className="settings-button" onClick={handleShowSettings}>
+          ⚙️
+        </button>
+      </header>
 
-        <Question
-          question={currentQuestion?.question}
-          choices={currentQuestion?.choices}
-          onAnswer={handleAnswer}
-          selectedChoice={selectedChoice}
-          timeLeft={timeLeft}
-          isPremium={isPremium || canAccessPremium}
-          isAnswered={isAnswered}
-          correctIndex={currentQuestion?.correctIndex}
-        />
+      {/* Pub en haut */}
+      {!isPremium && <AdComponent slot="1111111111" />}
 
-        {!(isPremium || canAccessPremium) && currentQuestionIndex === 0 && (
-          <PremiumBanner onUpgrade={handleUpgrade} />
-        )}
+      <Question
+        question={currentQuestion?.question}
+        choices={currentQuestion?.choices}
+        onAnswer={handleAnswer}
+        selectedChoice={selectedChoice}
+        timeLeft={timeLeft}
+        isPremium={isPremium || canAccessPremium}
+        isAnswered={isAnswered}
+        correctIndex={currentQuestion?.correctIndex}
+      />
 
-        <div className="quiz-progress">
-          <div className="progress-bar">
-            <div
-              className="progress-fill"
-              style={{ width: `${((currentQuestionIndex + 1) / shuffledQuestions.length) * 100}%` }}
-            ></div>
-          </div>
-          <span className="progress-text">
-            Question {currentQuestionIndex + 1} sur {shuffledQuestions.length}
-          </span>
+      {/* Pub après la première question */}
+      {!isPremium && currentQuestionIndex === 0 && <AdComponent slot="2222222222" />}
+
+      {!(isPremium || canAccessPremium) && currentQuestionIndex === 0 && (
+        <PremiumBanner onUpgrade={handleUpgrade} />
+      )}
+
+      <div className="quiz-progress">
+        <div className="progress-bar">
+          <div
+            className="progress-fill"
+            style={{ width: `${((currentQuestionIndex + 1) / shuffledQuestions.length) * 100}%` }}
+          ></div>
         </div>
+        <span className="progress-text">
+          Question {currentQuestionIndex + 1} sur {shuffledQuestions.length}
+        </span>
       </div>
-    </div>
-  );
-};
 
+      {/* Pub en bas */}
+      {!isPremium && <AdComponent slot="3333333333" />}
+
+    </div>
+  </div>
+);
 export default App;
