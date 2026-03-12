@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from './firebase';
 
-const Login = ({}) => {
+const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSignUp, setIsSignUp] = useState(false);
@@ -12,35 +12,47 @@ const Login = ({}) => {
 
   useEffect(() => {
     // Animation d'entrée
-    setTimeout(() => setIsAnimating(true), 100);
+    const timer = setTimeout(() => setIsAnimating(true), 100);
+    return () => clearTimeout(timer);
   }, []);
 
   const handleToggleSignUp = () => {
     setIsAnimating(false);
+
     setTimeout(() => {
       setIsSignUp(!isSignUp);
       setError('');
-      // Animation spéciale pour nouveaux utilisateurs
+
       if (!isSignUp) {
         setShowWelcome(true);
         setTimeout(() => setShowWelcome(false), 2000);
       }
+
       setTimeout(() => setIsAnimating(true), 150);
     }, 150);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+
     try {
       if (isSignUp) {
         await createUserWithEmailAndPassword(auth, email, password);
       } else {
         await signInWithEmailAndPassword(auth, email, password);
       }
-      // Plus besoin d'appeler onLogin - useAuth gère automatiquement l'état
     } catch (err) {
       if (err.code === 'auth/operation-not-allowed') {
-        setError('L\'authentification n\'est pas activée. Utilisez le système de tokens avec les pubs pour accéder au premium.');
+        setError(
+          "L'authentification n'est pas activée. Utilisez le système de tokens avec les pubs pour accéder au premium."
+        );
+      } else if (err.code === 'auth/email-already-in-use') {
+        setError("Cet email est déjà utilisé.");
+      } else if (err.code === 'auth/invalid-email') {
+        setError("Email invalide.");
+      } else if (err.code === 'auth/weak-password') {
+        setError("Le mot de passe doit contenir au moins 6 caractères.");
       } else {
         setError(err.message);
       }
@@ -49,6 +61,7 @@ const Login = ({}) => {
 
   return (
     <div className="login-container">
+
       {showWelcome && (
         <div className="welcome-animation">
           <div className="welcome-content">
@@ -58,20 +71,30 @@ const Login = ({}) => {
           </div>
         </div>
       )}
-      <div className={`login-card ${isAnimating ? 'animate-in' : 'animate-out'} ${isSignUp ? 'signup-mode' : 'login-mode'}`}>
+
+      <div
+        className={`login-card ${
+          isAnimating ? 'animate-in' : 'animate-out'
+        } ${isSignUp ? 'signup-mode' : 'login-mode'}`}
+      >
         <div className="login-header">
           <div className="logo-animation">
             <span className="logo-icon">🧪</span>
           </div>
+
           <h2 className="login-title">
             {isSignUp ? 'Rejoignez Premium' : 'Bienvenue Premium'}
           </h2>
+
           <p className="login-subtitle">
-            {isSignUp ? 'Accédez à toutes les fonctionnalités avancées' : 'Connectez-vous pour continuer'}
+            {isSignUp
+              ? 'Accédez à toutes les fonctionnalités avancées'
+              : 'Connectez-vous pour continuer'}
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="login-form">
+
           <div className="input-group">
             <div className="input-icon">📧</div>
             <input
@@ -102,6 +125,7 @@ const Login = ({}) => {
             </span>
             <span className="btn-arrow">→</span>
           </button>
+
         </form>
 
         {error && (
@@ -114,14 +138,20 @@ const Login = ({}) => {
         <div className="login-footer">
           <button onClick={handleToggleSignUp} className="toggle-btn">
             <span className="toggle-text">
-              {isSignUp ? 'Déjà membre ? Se connecter' : 'Nouveau ? Créer un compte'}
+              {isSignUp
+                ? 'Déjà membre ? Se connecter'
+                : 'Nouveau ? Créer un compte'}
             </span>
-            <span className="toggle-arrow">{isSignUp ? '←' : '→'}</span>
+            <span className="toggle-arrow">
+              {isSignUp ? '←' : '→'}
+            </span>
           </button>
         </div>
+
       </div>
     </div>
   );
 };
 
+export default Login;
 export default Login;
